@@ -76,3 +76,19 @@ func TestPopN(t *testing.T) {
 		assert.Equal(val, received[idx])
 	}
 }
+
+func TestDuplicate(t *testing.T) {
+	assert, stack := setup(t)
+	letter := randLetter()
+
+	stack.Push(letter)
+	assert.Equal(1, stack.Length())
+	stack.Duplicate()
+	assert.Equal(2, stack.Length())
+
+	var (
+		expected    = []rune{letter, letter}
+		received, _ = stack.PopN(2)
+	)
+	assert.ElementsMatch(expected, received)
+}
