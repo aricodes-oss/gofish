@@ -1,6 +1,7 @@
 package interpreter
 
 import (
+	"math"
 	"math/rand"
 	"slices"
 	"testing"
@@ -8,23 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const MAX_SAMPLE_SIZE = 128
-
-func setup(t *testing.T) (*assert.Assertions, *stack) {
-	return assert.New(t), new(stack)
-}
-
-func randLetter() rune {
-	return rune(rand.Int31())
-}
-
-func randNLetters(n int) (out []rune) {
-	out = make([]rune, n)
-	for idx := range out {
-		out[idx] = randLetter()
-	}
-	return
-}
+const MAX_DEPTH = math.MaxInt16
 
 func TestPush(t *testing.T) {
 	assert, stack := setup(t)
@@ -39,7 +24,7 @@ func TestPush(t *testing.T) {
 
 func TestPushN(t *testing.T) {
 	assert, stack := setup(t)
-	letters := randNLetters(rand.Intn(MAX_SAMPLE_SIZE))
+	letters := randNLetters(rand.Intn(MAX_DEPTH))
 
 	stack.PushN(letters...)
 	assert.Equal(stack.Length(), len(letters))
@@ -63,7 +48,7 @@ func TestPop(t *testing.T) {
 
 func TestPopN(t *testing.T) {
 	assert, stack := setup(t)
-	letters := randNLetters(rand.Intn(MAX_SAMPLE_SIZE))
+	letters := randNLetters(rand.Intn(MAX_DEPTH))
 
 	stack.PushN(letters...)
 	assert.Equal(len(letters), stack.Length())
@@ -90,5 +75,55 @@ func TestDuplicate(t *testing.T) {
 		expected    = []rune{letter, letter}
 		received, _ = stack.PopN(2)
 	)
-	assert.ElementsMatch(expected, received)
+	assertSlicesMatch(assert, expected, received)
+}
+
+func TestSwap(t *testing.T) {
+	assert, stack := setup(t)
+	expected := randNLetters(2)
+
+	stack.PushN(expected...)
+	stack.Swap()
+
+	slices.Reverse(expected)
+	received, _ := stack.PopN(2)
+	assertSlicesMatch(assert, expected, received)
+}
+
+func TestRshift(t *testing.T) {
+	assert, stack := setup(t)
+	expected := randNLetters(3)
+
+	stack.PushN(expected...)
+	stack.Rshift() // Dropping a (hopefully) impossible error
+
+	// manual rshift + reverse to account for LIFO
+	expected = []rune{expected[1], expected[0], expected[2]}
+	received, _ := stack.PopN(3)
+	assertSlicesMatch(assert, expected, received)
+}
+
+/**** Utility ****/
+func setup(t *testing.T) (*assert.Assertions, *stack) {
+	return assert.New(t), new(stack)
+}
+
+func randLetter() rune {
+	return rune(rand.Int31())
+}
+
+func randNLetters(n int) (out []rune) {
+	out = make([]rune, n)
+	for idx := range out {
+		out[idx] = randLetter()
+	}
+	return
+}
+
+// testify/assert only has ElementsMatch which does not account for order
+// As a stack is an ordered data structure, this is a problem
+func assertSlicesMatch[T comparable](assert *assert.Assertions, expected []T, actual []T) {
+	for idx, elem := range expected {
+		assert.Equal(elem, actual[idx])
+	}
 }

@@ -31,16 +31,21 @@ type Stack interface {
 	// Length returns the size of the stack
 	Length() int
 
+	// Register toggles an element into or out of the register
+	Register() error
+
 	// Empty returns whether or not the pool is empty
 	Empty() bool
 	// Clear empties the stack
 	Clear()
 }
 
-// A stack holds runes (int32) as well as a register
+// A stack holds runes (int32) as well as a single-element register
 type stack struct {
 	pool     []rune
 	register rune
+
+	registerInUse bool // An unfortunate consequence of Go's zero values
 }
 
 func (s *stack) Push(val rune) {
@@ -105,6 +110,10 @@ func (s *stack) Swap() error {
 }
 
 func (s *stack) Rshift() error {
+	if s.Empty() {
+		return ErrStackEmpty
+	}
+
 	last, err := s.Pop()
 	if err != nil {
 		return err
@@ -150,4 +159,20 @@ func (s *stack) Empty() bool {
 
 func (s *stack) Clear() {
 	s.pool = make([]rune, 0)
+}
+
+func (s *stack) Register() error {
+	if s.registerInUse {
+		s.Push(s.register)
+		s.register = rune(0)
+	} else {
+		top, err := s.Pop()
+		if err != nil {
+			return err
+		}
+		s.register = top
+	}
+
+	s.registerInUse = !s.registerInUse
+	return nil
 }
