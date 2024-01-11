@@ -62,6 +62,15 @@ func TestPopN(t *testing.T) {
 	}
 }
 
+func TestPopAll(t *testing.T) {
+	assert, stack := setup(t)
+	letters := randNLetters(MAX_DEPTH)
+
+	stack.PushN(letters...)
+	popped, _ := stack.PopAll()
+	assert.Equal(len(letters), len(popped))
+}
+
 func TestDuplicate(t *testing.T) {
 	assert, stack := setup(t)
 	letter := randLetter()
@@ -75,7 +84,8 @@ func TestDuplicate(t *testing.T) {
 		expected    = []rune{letter, letter}
 		received, _ = stack.PopN(2)
 	)
-	assertSlicesMatch(assert, expected, received)
+	assert.Equal(expected, received)
+	// assert.Equal(expected, received)
 }
 
 func TestSwap(t *testing.T) {
@@ -87,7 +97,7 @@ func TestSwap(t *testing.T) {
 
 	slices.Reverse(expected)
 	received, _ := stack.PopN(2)
-	assertSlicesMatch(assert, expected, received)
+	assert.Equal(expected, received)
 }
 
 func TestRshift(t *testing.T) {
@@ -100,8 +110,29 @@ func TestRshift(t *testing.T) {
 	// manual rshift + reverse to account for LIFO
 	expected = []rune{expected[1], expected[0], expected[2]}
 	received, _ := stack.PopN(3)
-	assertSlicesMatch(assert, expected, received)
+	assert.Equal(expected, received)
 }
+
+func TestLshift(t *testing.T) {
+	assert, stack := setup(t)
+	expected := randNLetters(3)
+
+	stack.PushN(expected...)
+	stack.Lshift() // Dropping a (hopefully) impossible error
+
+	// manual lshift + reverse to account for LIFO
+	expected = []rune{expected[0], expected[2], expected[1]}
+	received, _ := stack.PopN(3)
+	assert.Equal(expected, received)
+}
+
+// func TestTopShift(t *testing.T) {
+// 	assert, stack := setup(t)
+// 	expected := make([]rune, 0)
+// 	for len(expected) < 4 {
+// 		expected = randNLetters(64)
+// 	}
+// }
 
 /**** Utility ****/
 func setup(t *testing.T) (*assert.Assertions, *stack) {
@@ -118,12 +149,4 @@ func randNLetters(n int) (out []rune) {
 		out[idx] = randLetter()
 	}
 	return
-}
-
-// testify/assert only has ElementsMatch which does not account for order
-// As a stack is an ordered data structure, this is a problem
-func assertSlicesMatch[T comparable](assert *assert.Assertions, expected []T, actual []T) {
-	for idx, elem := range expected {
-		assert.Equal(elem, actual[idx])
-	}
 }

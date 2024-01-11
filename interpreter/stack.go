@@ -13,6 +13,8 @@ type Stack interface {
 	Pop() (rune, error)
 	// PopN removes the last N values from the Stack and returns it
 	PopN(n int) ([]rune, error)
+	// PopAll removes all values from the Stack and returns them
+	PopAll() ([]rune, error)
 
 	// Duplicate adds another copy of the top value to the Stack
 	Duplicate() error
@@ -80,6 +82,10 @@ func (s *stack) PopN(n int) (vals []rune, err error) {
 		vals[idx] = val
 	}
 	return
+}
+
+func (s *stack) PopAll() ([]rune, error) {
+	return s.PopN(s.Length())
 }
 
 func (s *stack) Duplicate() error {
