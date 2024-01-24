@@ -1,4 +1,4 @@
-package interpreter
+package stack
 
 import (
 	"math"

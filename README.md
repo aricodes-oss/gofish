@@ -11,6 +11,7 @@ Go >= 1.21.0
 ## Building
 
 ```bash
+go generate ./...
 go build
 ```
 

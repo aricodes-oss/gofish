@@ -1,59 +1,67 @@
-package interpreter
+package stack
 
-import "slices"
+import (
+	"gofish/interpreter/errors"
+	"slices"
+)
 
-// A Stack is an object capable of performing stack operations
+// A Stack is an object capable of performing stack operations.
 type Stack interface {
-	// Push adds a value to the Stack
+	// Push adds a value to the Stack.
 	Push(val rune)
-	// PushN adds multiple values to the Stack
+	// PushN adds multiple values to the Stack.
 	PushN(vals ...rune)
 
-	// Pop removes the last value from the Stack and returns it
+	// Pop removes the last value from the Stack and returns it.
 	Pop() (rune, error)
-	// PopN removes the last N values from the Stack and returns it
+	// PopN removes the last N values from the Stack and returns it.
 	PopN(n int) ([]rune, error)
-	// PopAll removes all values from the Stack and returns them
+	// PopAll removes all values from the Stack and returns them.
 	PopAll() ([]rune, error)
 
-	// Duplicate adds another copy of the top value to the Stack
+	// Duplicate adds another copy of the top value to the Stack.
 	Duplicate() error
-	// Swap switches the places of the top two values on the Stack
+	// Swap switches the places of the top two values on the Stack.
 	Swap() error
 
-	// Rshift moves the entire stack to the right ([1,2,3,4] -> [4,1,2,3])
+	// Rshift moves the entire stack to the right ([1,2,3,4] -> [4,1,2,3]).
 	Rshift() error
-	// Lshift moves the entire stack to the right ([1,2,3,4] -> [2,3,4,1])
+	// Lshift moves the entire stack to the right ([1,2,3,4] -> [2,3,4,1]).
 	Lshift() error
-	// TopShift takes the top three values and shifts them right ([1,2,3,4] -> [1,4,2,3])
+	// TopShift takes the top three values and shifts them right ([1,2,3,4] -> [1,4,2,3]).
 	TopShift() error
 
-	// Reverse reverse the order of the Stack
+	// Reverse reverse the order of the Stack.
 	Reverse()
-	// Length returns the size of the stack
+	// Length returns the size of the stack.
 	Length() int
 
-	// New returns a new stack wiith `x` elements off the previous one
-	// `x` is popped off the stack
+	// New returns a new stack wiith `x` elements off the previous one.
+	// `x` is popped off the stack.
 	New() (Stack, error)
-	// Consume takes a new Stack and appends its elements to this one
+	// Consume takes a new Stack and appends its elements to this one.
 	Consume(child Stack)
 
-	// Register toggles an element into or out of the register
+	// Register toggles an element into or out of the register.
 	Register() error
 
-	// Empty returns whether or not the pool is empty
+	// Empty returns whether or not the pool is empty.
 	Empty() bool
-	// Clear empties the stack
+	// Clear empties the stack.
 	Clear()
 }
 
-// A stack holds runes (int32) as well as a single-element register
+// A stack holds runes (int32) as well as a single-element register.
 type stack struct {
 	pool     []rune
 	register rune
 
 	registerInUse bool // An unfortunate consequence of Go's zero values
+}
+
+// NewStack returns a new Stack object.
+func NewStack() Stack {
+	return new(stack)
 }
 
 func (s *stack) Push(val rune) {
@@ -66,7 +74,7 @@ func (s *stack) PushN(vals ...rune) {
 
 func (s *stack) Pop() (val rune, err error) {
 	if s.Empty() {
-		err = ErrStackEmpty
+		err = errors.ErrStackEmpty
 		return
 	}
 
@@ -107,7 +115,7 @@ func (s *stack) Duplicate() error {
 
 func (s *stack) Swap() error {
 	if s.Empty() || s.Length() < 2 {
-		return ErrStackEmpty
+		return errors.ErrStackEmpty
 	}
 
 	vals, err := s.PopN(2)
@@ -123,7 +131,7 @@ func (s *stack) Swap() error {
 
 func (s *stack) Rshift() error {
 	if s.Empty() {
-		return ErrStackEmpty
+		return errors.ErrStackEmpty
 	}
 
 	last, err := s.Pop()
@@ -137,7 +145,7 @@ func (s *stack) Rshift() error {
 
 func (s *stack) Lshift() error {
 	if s.Empty() {
-		return ErrStackEmpty
+		return errors.ErrStackEmpty
 	}
 
 	first := s.pool[0]
