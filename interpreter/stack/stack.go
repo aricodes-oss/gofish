@@ -108,8 +108,7 @@ func (s *stack) Duplicate() error {
 		return err
 	}
 
-	s.Push(val)
-	s.Push(val)
+	s.PushN(val, val)
 	return nil
 }
 
