@@ -181,9 +181,36 @@ func TestNew(t *testing.T) {
 	assert.Equal(stack.Length(), len(letters)-int(childSize))
 }
 
+// Benchmarks
+func BenchmarkTopShift(b *testing.B) {
+	letters := atLeastNLetters(4, 64)
+	stack := NewStack()
+	stack.PushN(letters...)
+	for i := 0; i < b.N; i++ {
+		stack.TopShift()
+	}
+}
+
+func BenchmarkTopShiftTest(b *testing.B) {
+	letters := atLeastNLetters(4, 64)
+	stack := NewStack()
+	stack.PushN(letters...)
+
+	var altShift = func(s Stack) {
+		s.Push(3)
+		child, _ := s.New()
+		child.Rshift()
+		s.Consume(child)
+	}
+
+	for i := 0; i < b.N; i++ {
+		altShift(stack)
+	}
+}
+
 /**** Utility ****/
 func setup(t *testing.T) (*assert.Assertions, *stack) {
-	return assert.New(t), new(stack)
+	return assert.New(t), NewStack().(*stack)
 }
 
 func randLetter() rune {
@@ -195,5 +222,13 @@ func randLetters(n int) (out []rune) {
 	for idx := range out {
 		out[idx] = randLetter()
 	}
+	return
+}
+
+func atLeastNLetters(min int, count int) (out []rune) {
+	for len(out) < min {
+		out = randLetters(count)
+	}
+
 	return
 }

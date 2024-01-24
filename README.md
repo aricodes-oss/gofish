@@ -18,5 +18,5 @@ go build
 ## Running tests
 
 ```bash
-go test -v ./...
+go test -v ./... -bench=.
 ```

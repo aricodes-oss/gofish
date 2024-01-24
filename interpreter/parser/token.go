@@ -40,8 +40,8 @@ const (
 	REMOVE    // ~
 	SWAP      // $
 	TOPSHIFT  // @
-	RSHIFT    // {
-	LSHIFT    // }
+	RSHIFT    // }
+	LSHIFT    // {
 	REVERSE   // r
 	LENGTH    // l
 	NEW       // [
@@ -57,4 +57,7 @@ const (
 	PEEK     // g
 	POKE     // p
 	HALT     // :
+
+	WHITESPACE
+	EOF
 )
