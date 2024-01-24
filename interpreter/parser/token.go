@@ -27,13 +27,13 @@ const (
 	JUMP   // .
 
 	/** Literals/operators **/
-	IDENT // 0-f
-	ADD   // +
-	SUB   // -
-	MUL   // *
-	DIV   // ,
-	MOD   // %
-	EQ    // =
+	VAL // 0-f
+	ADD // +
+	SUB // -
+	MUL // *
+	DIV // ,
+	MOD // %
+	EQ  // =
 
 	/** Stack Manipulation **/
 	DUPLICATE // :

@@ -36,7 +36,7 @@ func (s *Scanner) Scan() (tok Token, lit string) {
 	lit = string(ch)
 
 	// Here is typically when we would consume all whitespace, but
-	// in ><> every character is significant, so straight to matching
+	// in ><> every character is significant - making matching easy
 	if found, known := RuneToToken[ch]; known {
 		tok = found
 	} else {
