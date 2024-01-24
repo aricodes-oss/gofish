@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// The max depth *for testing* - actual max depth depends on default platform int size
 const MAX_DEPTH = math.MaxInt16
 
 func TestPush(t *testing.T) {
@@ -24,7 +25,7 @@ func TestPush(t *testing.T) {
 
 func TestPushN(t *testing.T) {
 	assert, stack := setup(t)
-	letters := randNLetters(rand.Intn(MAX_DEPTH))
+	letters := randLetters(rand.Intn(MAX_DEPTH))
 
 	stack.PushN(letters...)
 	assert.Equal(stack.Length(), len(letters))
@@ -48,7 +49,7 @@ func TestPop(t *testing.T) {
 
 func TestPopN(t *testing.T) {
 	assert, stack := setup(t)
-	letters := randNLetters(rand.Intn(MAX_DEPTH))
+	letters := randLetters(rand.Intn(MAX_DEPTH))
 
 	stack.PushN(letters...)
 	assert.Equal(len(letters), stack.Length())
@@ -64,7 +65,7 @@ func TestPopN(t *testing.T) {
 
 func TestPopAll(t *testing.T) {
 	assert, stack := setup(t)
-	letters := randNLetters(MAX_DEPTH)
+	letters := randLetters(MAX_DEPTH)
 
 	stack.PushN(letters...)
 	popped, _ := stack.PopAll()
@@ -82,7 +83,7 @@ func TestDuplicate(t *testing.T) {
 
 	var (
 		expected    = []rune{letter, letter}
-		received, _ = stack.PopN(2)
+		received, _ = stack.PopAll()
 	)
 	assert.Equal(expected, received)
 	// assert.Equal(expected, received)
@@ -90,32 +91,32 @@ func TestDuplicate(t *testing.T) {
 
 func TestSwap(t *testing.T) {
 	assert, stack := setup(t)
-	expected := randNLetters(2)
+	expected := randLetters(2)
 
 	stack.PushN(expected...)
 	stack.Swap()
 
 	slices.Reverse(expected)
-	received, _ := stack.PopN(2)
+	received, _ := stack.PopAll()
 	assert.Equal(expected, received)
 }
 
 func TestRshift(t *testing.T) {
 	assert, stack := setup(t)
-	expected := randNLetters(3)
+	expected := randLetters(3)
 
 	stack.PushN(expected...)
 	stack.Rshift() // Dropping a (hopefully) impossible error
 
 	// manual rshift + reverse to account for LIFO
 	expected = []rune{expected[1], expected[0], expected[2]}
-	received, _ := stack.PopN(3)
+	received, _ := stack.PopAll()
 	assert.Equal(expected, received)
 }
 
 func TestLshift(t *testing.T) {
 	assert, stack := setup(t)
-	expected := randNLetters(3)
+	expected := randLetters(3)
 
 	stack.PushN(expected...)
 	stack.Lshift() // Dropping a (hopefully) impossible error
@@ -126,13 +127,59 @@ func TestLshift(t *testing.T) {
 	assert.Equal(expected, received)
 }
 
-// func TestTopShift(t *testing.T) {
-// 	assert, stack := setup(t)
-// 	expected := make([]rune, 0)
-// 	for len(expected) < 4 {
-// 		expected = randNLetters(64)
-// 	}
-// }
+func TestTopShift(t *testing.T) {
+	assert, actual := setup(t)
+	expected := new(stack)
+	letters := make([]rune, 0)
+	for len(letters) < 4 {
+		letters = randLetters(64)
+	}
+
+	expected.PushN(letters...)
+	actual.PushN(letters...)
+
+	expected.Push(3)
+	child, _ := expected.New()
+	child.Rshift()
+	expected.Consume(child)
+
+	actual.TopShift()
+
+	assert.Equal(expected.pool, actual.pool)
+}
+
+func TestReverse(t *testing.T) {
+	assert, stack := setup(t)
+	letters := randLetters(MAX_DEPTH)
+	stack.PushN(letters...)
+	stack.Reverse()
+
+	actual, _ := stack.PopAll()
+	assert.Equal(letters, actual)
+}
+
+// Is this needed? No.
+// Is this wanted? No.
+// Am I gonna put it? Yep.
+func TestLength(t *testing.T) {
+	assert, stack := setup(t)
+	letters := randLetters(MAX_DEPTH)
+	stack.PushN(letters...)
+	assert.Equal(len(letters), stack.Length())
+}
+
+func TestNew(t *testing.T) {
+	assert, stack := setup(t)
+	letters := randLetters(MAX_DEPTH)
+	stack.PushN(letters...)
+
+	childSize := rand.Int31n(int32(len(letters) - 1))
+	stack.Push(childSize)
+	child, _ := stack.New()
+
+	assert.Equal(int(childSize), child.Length())
+	assert.Equal(stack.Length(), len(letters)-int(childSize))
+}
 
 /**** Utility ****/
 func setup(t *testing.T) (*assert.Assertions, *stack) {
@@ -143,7 +190,7 @@ func randLetter() rune {
 	return rune(rand.Int31())
 }
 
-func randNLetters(n int) (out []rune) {
+func randLetters(n int) (out []rune) {
 	out = make([]rune, n)
 	for idx := range out {
 		out[idx] = randLetter()

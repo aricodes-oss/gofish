@@ -8,5 +8,7 @@ func main() {
 		x[idx] = idx
 	}
 
-	fmt.Println(x[1:3])
+	l := len(x)
+
+	fmt.Println(x[:l])
 }

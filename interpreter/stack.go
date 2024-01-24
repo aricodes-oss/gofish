@@ -33,6 +33,12 @@ type Stack interface {
 	// Length returns the size of the stack
 	Length() int
 
+	// New returns a new stack wiith `x` elements off the previous one
+	// `x` is popped off the stack
+	New() (Stack, error)
+	// Consume takes a new Stack and appends its elements to this one
+	Consume(child Stack)
+
 	// Register toggles an element into or out of the register
 	Register() error
 
@@ -144,15 +150,40 @@ func (s *stack) TopShift() error {
 	if err != nil {
 		return err
 	}
+	slices.Reverse(vals)
 
 	last := vals[len(vals)-1]
-	vals = append([]rune{last}, vals[1:len(vals)-1]...)
+	vals = append([]rune{last}, vals[:len(vals)-1]...)
 	s.PushN(vals...)
 	return nil
 }
 
 func (s *stack) Reverse() {
 	slices.Reverse(s.pool)
+}
+
+func (s *stack) New() (ret Stack, err error) {
+	x, err := s.Pop()
+	if err != nil {
+		return nil, err
+	}
+
+	ret = new(stack)
+	size := s.Length()
+
+	// When values are transferred to a new stack their order is preserved
+	// (as opposed to pushed and popped) so we're avoiding allocations by
+	// directly manipulating the pool
+	vals := s.pool[size-int(x) : size]
+	s.pool = s.pool[:size-int(x)]
+	ret.PushN(vals...)
+	return
+}
+
+func (s *stack) Consume(child Stack) {
+	child.Reverse()
+	elements, _ := child.PopAll()
+	s.PushN(elements...)
 }
 
 func (s *stack) Length() int {
