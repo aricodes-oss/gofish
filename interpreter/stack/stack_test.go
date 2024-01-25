@@ -14,7 +14,7 @@ const MAX_DEPTH = math.MaxInt16
 
 func TestPush(t *testing.T) {
 	assert, stack := setup(t)
-	letter := rune(rand.Int31())
+	letter := float64(rand.Int31())
 
 	stack.Push(letter)
 
@@ -82,7 +82,7 @@ func TestDuplicate(t *testing.T) {
 	assert.Equal(2, stack.Length())
 
 	var (
-		expected    = []rune{letter, letter}
+		expected    = []float64{letter, letter}
 		received, _ = stack.PopAll()
 	)
 	assert.Equal(expected, received)
@@ -109,7 +109,7 @@ func TestRshift(t *testing.T) {
 	stack.Rshift() // Dropping a (hopefully) impossible error
 
 	// manual rshift + reverse to account for LIFO
-	expected = []rune{expected[1], expected[0], expected[2]}
+	expected = []float64{expected[1], expected[0], expected[2]}
 	received, _ := stack.PopAll()
 	assert.Equal(expected, received)
 }
@@ -122,7 +122,7 @@ func TestLshift(t *testing.T) {
 	stack.Lshift() // Dropping a (hopefully) impossible error
 
 	// manual lshift + reverse to account for LIFO
-	expected = []rune{expected[0], expected[2], expected[1]}
+	expected = []float64{expected[0], expected[2], expected[1]}
 	received, _ := stack.PopN(3)
 	assert.Equal(expected, received)
 }
@@ -130,7 +130,7 @@ func TestLshift(t *testing.T) {
 func TestTopShift(t *testing.T) {
 	assert, actual := setup(t)
 	expected := new(stack)
-	letters := make([]rune, 0)
+	letters := make([]float64, 0)
 	for len(letters) < 4 {
 		letters = randLetters(64)
 	}
@@ -174,7 +174,7 @@ func TestNew(t *testing.T) {
 	stack.PushN(letters...)
 
 	childSize := rand.Int31n(int32(len(letters) - 1))
-	stack.Push(childSize)
+	stack.Push(float64(childSize))
 	child, _ := stack.New()
 
 	assert.Equal(int(childSize), child.Length())
@@ -213,19 +213,19 @@ func setup(t *testing.T) (*assert.Assertions, *stack) {
 	return assert.New(t), NewStack().(*stack)
 }
 
-func randLetter() rune {
-	return rune(rand.Int31())
+func randLetter() float64 {
+	return float64(rand.Int31())
 }
 
-func randLetters(n int) (out []rune) {
-	out = make([]rune, n)
+func randLetters(n int) (out []float64) {
+	out = make([]float64, n)
 	for idx := range out {
 		out[idx] = randLetter()
 	}
 	return
 }
 
-func atLeastNLetters(min int, count int) (out []rune) {
+func atLeastNLetters(min int, count int) (out []float64) {
 	for len(out) < min {
 		out = randLetters(count)
 	}

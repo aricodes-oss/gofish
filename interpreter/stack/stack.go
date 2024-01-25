@@ -8,16 +8,16 @@ import (
 // A Stack is an object capable of performing stack operations.
 type Stack interface {
 	// Push adds a value to the Stack.
-	Push(val rune)
+	Push(val float64)
 	// PushN adds multiple values to the Stack.
-	PushN(vals ...rune)
+	PushN(vals ...float64)
 
 	// Pop removes the last value from the Stack and returns it.
-	Pop() (rune, error)
+	Pop() (float64, error)
 	// PopN removes the last N values from the Stack and returns it.
-	PopN(n int) ([]rune, error)
+	PopN(n int) ([]float64, error)
 	// PopAll removes all values from the Stack and returns them.
-	PopAll() ([]rune, error)
+	PopAll() ([]float64, error)
 
 	// Duplicate adds another copy of the top value to the Stack.
 	Duplicate() error
@@ -51,10 +51,10 @@ type Stack interface {
 	Clear()
 }
 
-// A stack holds runes (int32) as well as a single-element register.
+// A stack holds float64s (int32) as well as a single-element register.
 type stack struct {
-	pool     []rune
-	register rune
+	pool     []float64
+	register float64
 
 	registerInUse bool // An unfortunate consequence of Go's zero values
 }
@@ -64,15 +64,15 @@ func NewStack() Stack {
 	return new(stack)
 }
 
-func (s *stack) Push(val rune) {
+func (s *stack) Push(val float64) {
 	s.pool = append(s.pool, val)
 }
 
-func (s *stack) PushN(vals ...rune) {
+func (s *stack) PushN(vals ...float64) {
 	s.pool = append(s.pool, vals...)
 }
 
-func (s *stack) Pop() (val rune, err error) {
+func (s *stack) Pop() (val float64, err error) {
 	if s.Empty() {
 		err = errors.ErrStackEmpty
 		return
@@ -84,8 +84,8 @@ func (s *stack) Pop() (val rune, err error) {
 	return
 }
 
-func (s *stack) PopN(n int) (vals []rune, err error) {
-	vals = make([]rune, n)
+func (s *stack) PopN(n int) (vals []float64, err error) {
+	vals = make([]float64, n)
 
 	for idx := range vals {
 		val, err := s.Pop()
@@ -98,7 +98,7 @@ func (s *stack) PopN(n int) (vals []rune, err error) {
 	return
 }
 
-func (s *stack) PopAll() ([]rune, error) {
+func (s *stack) PopAll() ([]float64, error) {
 	return s.PopN(s.Length())
 }
 
@@ -138,7 +138,7 @@ func (s *stack) Rshift() error {
 		return err
 	}
 
-	s.pool = append([]rune{last}, s.pool...)
+	s.pool = append([]float64{last}, s.pool...)
 	return nil
 }
 
@@ -160,7 +160,7 @@ func (s *stack) TopShift() error {
 	slices.Reverse(vals)
 
 	last := vals[len(vals)-1]
-	vals = append([]rune{last}, vals[:len(vals)-1]...)
+	vals = append([]float64{last}, vals[:len(vals)-1]...)
 	s.PushN(vals...)
 	return nil
 }
@@ -202,13 +202,13 @@ func (s *stack) Empty() bool {
 }
 
 func (s *stack) Clear() {
-	s.pool = make([]rune, 0)
+	s.pool = make([]float64, 0)
 }
 
 func (s *stack) Register() error {
 	if s.registerInUse {
 		s.Push(s.register)
-		s.register = rune(0)
+		s.register = float64(0)
 	} else {
 		top, err := s.Pop()
 		if err != nil {
