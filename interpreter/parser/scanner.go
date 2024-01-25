@@ -30,17 +30,17 @@ func (s *Scanner) read() rune {
 }
 
 // Scan returns the next token and literal value
-func (s *Scanner) Scan() (tok Token, lit string) {
+func (s *Scanner) Scan() (tok Token, raw rune) {
 	// Read the next rune
 	ch := s.read()
-	lit = string(ch)
+	raw = ch
 
 	// Here is typically when we would consume all whitespace, but
 	// in ><> every character is significant - making matching easy
 	if found, known := RuneToToken[ch]; known {
 		tok = found
 	} else {
-		tok = IDENT
+		tok = VAL
 	}
 
 	return

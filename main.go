@@ -11,4 +11,5 @@ func main() {
 	l := len(x)
 
 	fmt.Println(x[:l])
+	fmt.Println('\n')
 }

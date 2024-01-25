@@ -21,12 +21,16 @@ var RuneToToken = map[rune]Token{
 	'.': JUMP,
 
 	// Literals/operands
-	'+': ADD,
-	'-': SUB,
-	'*': MUL,
-	',': DIV,
-	'%': MOD,
-	'=': EQ,
+	'+':  ADD,
+	'-':  SUB,
+	'*':  MUL,
+	',':  DIV,
+	'%':  MOD,
+	'=':  EQ,
+	'(':  LT,
+	')':  GT,
+	'\'': QUOTE,
+	'"':  DOUBLEQUOTE,
 
 	// Stack manipulation
 	':': DUPLICATE,
@@ -46,9 +50,10 @@ var RuneToToken = map[rune]Token{
 	'i': READ,
 
 	// Reflection/misc
-	'&': REGISTER,
-	'g': PEEK,
-	'p': POKE,
-	' ': WHITESPACE,
-	';': HALT,
+	'&':  REGISTER,
+	'g':  PEEK,
+	'p':  POKE,
+	' ':  WHITESPACE,
+	'\n': EOL,
+	';':  HALT,
 }
