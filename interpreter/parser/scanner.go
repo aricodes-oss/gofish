@@ -29,7 +29,7 @@ func (s *Scanner) read() rune {
 	return ch
 }
 
-// Scan returns the next token and literal value
+// Scan returns the next token and literal value.
 func (s *Scanner) Scan() (tok Token, raw rune) {
 	// Read the next rune
 	ch := s.read()
