@@ -51,7 +51,7 @@ type Stack interface {
 	Clear()
 }
 
-// A stack holds float64s (int32) as well as a single-element register.
+// A stack holds float64s as well as a single-element register.
 type stack struct {
 	pool     []float64
 	register float64
