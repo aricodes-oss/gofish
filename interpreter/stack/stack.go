@@ -36,7 +36,7 @@ type Stack interface {
 	// Length returns the size of the stack.
 	Length() int
 
-	// New returns a new stack wiith `x` elements off the previous one.
+	// New returns a new stack with `x` elements off the previous one.
 	// `x` is popped off the stack.
 	New() (Stack, error)
 	// Consume takes a new Stack and appends its elements to this one.
