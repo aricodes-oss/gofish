@@ -24,7 +24,7 @@ func NewScanner(r io.Reader) *Scanner {
 func (s *Scanner) read() (rune, error) {
 	ch, _, err := s.r.ReadRune()
 	if err != nil {
-		return ' ', err
+		return 0, err
 	}
 	return ch, nil
 }
