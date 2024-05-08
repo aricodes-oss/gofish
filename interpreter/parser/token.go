@@ -27,17 +27,16 @@ const (
 	JUMP   // .
 
 	/** Literals/operators **/
-	VAL                 // 0-f
-	ADD                 // +
-	SUB                 // -
-	MUL                 // *
-	DIV                 // ,
-	MOD                 // %
-	EQ                  // =
-	LT                  // (
-	GT                  // )
-	QUOTE               // '
-	DOUBLEQUOTE = QUOTE // "
+	VAL   // 0-f
+	ADD   // +
+	SUB   // -
+	MUL   // *
+	DIV   // ,
+	MOD   // %
+	EQ    // =
+	LT    // (
+	GT    // )
+	QUOTE // '
 
 	/** Stack Manipulation **/
 	DUPLICATE // :
@@ -65,4 +64,7 @@ const (
 	WHITESPACE
 	EOL
 	EOF
+
+	/** Duplicate Values **/
+	DOUBLEQUOTE = QUOTE // "
 )

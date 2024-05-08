@@ -1,9 +1,12 @@
 package parser
 
 import (
-	"github.com/stretchr/testify/assert"
+	"fmt"
+	"slices"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestScan(t *testing.T) {
@@ -34,6 +37,27 @@ func TestScan(t *testing.T) {
 			for _, expected := range tt.expected {
 				received, _ := scanner.Scan()
 				assert.Equal(expected, received)
+			}
+		})
+	}
+}
+
+func TestNoUnintendedDuplilcateTokens(t *testing.T) {
+	assert := assert.New(t)
+
+	for key, value := range RuneToToken {
+		t.Run(fmt.Sprintf("%c Doesn't match EOF", key), func(t *testing.T) {
+			for o_key, o_value := range RuneToToken {
+				if key == o_key {
+					// If we're comparing against ourself, we should match
+					assert.Equal(value, o_value)
+				} else if slices.Contains([]rune{'\'', '"'}, key) && slices.Contains([]rune{'\'', '"'}, o_key) {
+					// Since QUOTE and DOUBLEQUOTE are intentionally equal, make sure they match.
+					assert.Equal(value, o_value)
+				} else {
+					// In any other case the constants should be different.
+					assert.NotEqual(value, o_value)
+				}
 			}
 		})
 	}
