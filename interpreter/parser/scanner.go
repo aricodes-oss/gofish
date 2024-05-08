@@ -21,18 +21,21 @@ func NewScanner(r io.Reader) *Scanner {
 
 // read reads the next rune from the buffered reader.
 // Returns the rune(0) if an error occurs (or io.EOF is returned).
-func (s *Scanner) read() rune {
+func (s *Scanner) read() (rune, error) {
 	ch, _, err := s.r.ReadRune()
 	if err != nil {
-		return rune(EOF)
+		return ' ', err
 	}
-	return ch
+	return ch, nil
 }
 
 // Scan returns the next token and literal value.
 func (s *Scanner) Scan() (tok Token, raw rune) {
 	// Read the next rune
-	ch := s.read()
+	ch, err := s.read()
+	if err != nil {
+		return EOF, 0
+	}
 	raw = ch
 
 	// Here is typically when we would consume all whitespace, but
